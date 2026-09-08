@@ -1,10 +1,11 @@
 class Ocbar < Formula
   desc "OpenConnect client for macOS: SSO via WKWebView, split DNS, split tunneling, menu bar"
   homepage "https://github.com/ValeraGin/ocbar"
-  # Стабильная версия появится с первым тегом:
-  #   url "https://github.com/ValeraGin/ocbar/archive/refs/tags/v0.1.0.tar.gz"
-  #   sha256 "<brew fetch --build-from-source ocbar покажет>"
-  # До него формула head-only: brew install --HEAD ValeraGin/ocbar/ocbar
+  # Репозиторий приватный: tarball с GitHub без авторизации не скачать, а git
+  # по тегу работает с теми же учётными данными, что и --HEAD. Поэтому
+  # стабильная версия — тег и коммит, а не url + sha256 (D47).
+  url "https://github.com/ValeraGin/ocbar.git", tag: "v0.2.0", revision: "9767d3bc6df6c19ce7097693047618799385a685"
+  version "0.2.0"
   head "https://github.com/ValeraGin/ocbar.git", branch: "main"
   license "MIT"
 
@@ -17,11 +18,14 @@ class Ocbar < Formula
     system "swift", "build", "-c", "release", "--disable-sandbox",
            "--package-path", "auth", "--scratch-path", buildpath/"auth/.build"
     libexec.install "auth/.build/release/ocbar-auth"
+    # Приложение меню-бара: SwiftPM даёт исполняемый файл, бандл с
+    # Info.plist (LSUIElement) собирает make-app.sh.
+    cd("app") { system "./make-app.sh", prefix }
     libexec.install "libexec/ocbar-helper"
     bin.install "bin/ocbar"
     (pkgshare/"swiftbar").install "swiftbar/ocbar.5s.sh"
     (pkgshare/"examples").install Dir["etc/*.example"]
-    doc.install Dir["docs/0*.md"], "README.md"
+    doc.install Dir["docs/0*.md"], "README.md", "INSTALL.md", "TROUBLESHOOTING.md", "ROADMAP.md", "DECISIONS.md"
   end
 
   def caveats
@@ -31,6 +35,15 @@ class Ocbar < Formula
 
       Конфиги (образцы в #{pkgshare}/examples):
         ~/.config/ocbar/profiles.conf, zones.conf, networks.conf, autofill.rules
+
+      Меню-бар — приложение (плагин SwiftBar остаётся как запасной вариант):
+        ocbar app start                 запустить сейчас
+        ocbar app autostart on          запускать при входе в систему
+        open #{prefix}/ocbar.app        то же самое руками
+
+      Прокси-режим (Mode = proxy в профиле) нуждается в ocproxy — он не
+      зависимость формулы, потому что нужен только этому режиму:
+        brew install ocproxy
 
       Плагин SwiftBar — символической ссылкой в каталог плагинов:
         ln -s #{pkgshare}/swiftbar/ocbar.5s.sh ~/Library/Application\\ Support/SwiftBar/Plugins/
@@ -42,7 +55,10 @@ class Ocbar < Formula
 
   test do
     assert_match "ocbar 0.", shell_output("#{bin}/ocbar version")
+    assert_match "selftest: всё OK", shell_output("#{bin}/ocbar selftest")
     assert_match "selftest: всё OK", shell_output("#{libexec}/ocbar-auth --selftest")
     assert_match "ocbar-helper", shell_output("#{libexec}/ocbar-helper version")
+    assert_predicate prefix/"ocbar.app/Contents/MacOS/ocbar-app", :executable?
+    system "plutil", "-lint", prefix/"ocbar.app/Contents/Info.plist"
   end
 end
