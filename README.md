@@ -1,19 +1,26 @@
 # ValeraGin/ocbar
 
-Homebrew tap для [ocbar](https://github.com/ValeraGin/ocbar) — клиента
-Cisco AnyConnect (OpenConnect) для macOS с SSO через WKWebView, split DNS,
-split tunneling, супервизором и меню в строке состояния.
+Homebrew tap for [ocbar](https://github.com/ValeraGin/ocbar) — an
+AnyConnect-compatible VPN client for macOS built on OpenConnect: SAML
+single sign-on with autofill and TOTP, split DNS, split tunneling, a
+reconnecting supervisor and a menu bar app.
 
 ```bash
 brew tap ValeraGin/ocbar
-brew install --HEAD ocbar
-sudo ocbar install        # один раз: привилегированный хелпер, sudoers, агент
+brew trust ValeraGin/ocbar     # third-party tap: Homebrew refuses untrusted formulae
+brew install ocbar
+sudo ocbar install             # once: privileged helper, sudoers rule, LaunchAgent
+ocbar app start
 ```
 
-`brew upgrade ocbar` — это и есть автообновление.
+Updates: `brew upgrade ocbar`, then `ocbar app stop && ocbar app start`.
+Uninstall: `sudo ocbar uninstall`, then `brew uninstall ocbar`.
 
-Формула собирает программу из исходников на вашей машине. Так сделано
-намеренно: у проекта нет Apple Developer ID, а собранное локально не
-получает карантина, поэтому Gatekeeper не мешает запуску.
+The formula builds from source on your machine (macOS 13+, Command Line
+Tools). There is no Apple Developer ID; a locally built app is not
+quarantined, so Gatekeeper does not block it.
 
-Требуется macOS 13+ и Command Line Tools (полный Xcode не нужен).
+---
+
+Homebrew tap для ocbar — клиента OpenConnect для macOS. Установка — команды
+выше; подробности по-русски — [README.ru.md](https://github.com/ValeraGin/ocbar/blob/main/README.ru.md).
