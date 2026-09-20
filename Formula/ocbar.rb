@@ -4,8 +4,8 @@ class Ocbar < Formula
   # Стабильная версия — тег и коммит: версия берётся из имени тега, а хеш
   # архива не нужно считать заранее.
   url "https://github.com/ValeraGin/ocbar.git",
-      tag:      "v0.11.1",
-      revision: "4fcd591be8a6bb1e76e0f59e2b17067ec636bb98"
+      tag:      "v0.12.0",
+      revision: "4577ec986a531dacc5875e4909670d90efc3b5ab"
   license "MIT"
   head "https://github.com/ValeraGin/ocbar.git", branch: "main"
 
@@ -22,6 +22,8 @@ class Ocbar < Formula
     # Info.plist (LSUIElement) собирает make-app.sh.
     cd("app") { system "./make-app.sh", prefix }
     libexec.install "libexec/ocbar-helper"
+    # Преобразователь состояния в JSON: его зовёт `ocbar status --json`.
+    libexec.install "libexec/ocbar-status-json.py"
     bin.install "bin/ocbar"
     (pkgshare/"swiftbar").install "swiftbar/ocbar.5s.sh"
     # example.ocbar — образец основного формата (профиль одним файлом); маска
