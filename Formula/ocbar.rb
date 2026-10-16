@@ -1,11 +1,11 @@
 class Ocbar < Formula
   desc "AnyConnect-compatible VPN client: SSO, split DNS, split tunnel, menu bar"
-  homepage "https://github.com/ValeraGin/ocbar"
+  homepage "https://valeragin.github.io/ocbar/"
   # Стабильная версия — тег и коммит: версия берётся из имени тега, а хеш
   # архива не нужно считать заранее.
   url "https://github.com/ValeraGin/ocbar.git",
-      tag:      "v0.17.8",
-      revision: "1b27e3a1ecc9c853cfd7fa079268d23f6f4daaec"
+      tag:      "v0.18.0",
+      revision: "a69bf70181f7b0083a083857c84eed1f17750ab6"
   license "MIT"
   head "https://github.com/ValeraGin/ocbar.git", branch: "main"
 
@@ -36,7 +36,7 @@ class Ocbar < Formula
     (pkgshare/"swiftbar").install "swiftbar/ocbar.5s.sh"
     # example.ocbar — образец основного формата (профиль одним файлом); маска
     # *.example его не берёт, поэтому он назван отдельно.
-    (pkgshare/"examples").install Dir["etc/*.example"], "etc/example.ocbar"
+    (pkgshare/"examples").install Dir["etc/*.example"], "etc/example.ocbar", "etc/csd-wrapper.sh"
     doc.install "README.md", "README.ru.md", "INSTALL.md", "TROUBLESHOOTING.md", "SECURITY.md", "CHANGELOG.md"
   end
 
