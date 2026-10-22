@@ -4,8 +4,8 @@ class Ocbar < Formula
   # Стабильная версия — тег и коммит: версия берётся из имени тега, а хеш
   # архива не нужно считать заранее.
   url "https://github.com/ValeraGin/ocbar.git",
-      tag:      "v0.20.0",
-      revision: "24d3352e8a11f31483e03edda279a2a6d1d35c5b"
+      tag:      "v0.21.0",
+      revision: "3c42c03e771c94cef32a293478f00b8a3aa49ae3"
   license "MIT"
   head "https://github.com/ValeraGin/ocbar.git", branch: "main"
 
@@ -28,6 +28,7 @@ class Ocbar < Formula
     libexec.install "libexec/ocbar-logs.py"
     libexec.install "libexec/ocbar-redact.py"
     libexec.install "libexec/ocbar-pwauth.py"
+    libexec.install "libexec/ocbar-csd.py"
     # Перевод сообщений клиента: каталог шаблонов и тот, кто его применяет.
     libexec.install "libexec/ocbar-tr.pl"
     libexec.install "libexec/ocbar-en.tsv"
