@@ -1,26 +1,21 @@
-# ValeraGin/ocbar
+# OpenConnect for Mac — Homebrew tap
 
-Homebrew tap for [ocbar](https://github.com/ValeraGin/ocbar) — an
-AnyConnect-compatible VPN client for macOS built on OpenConnect: SAML
-single sign-on with autofill and TOTP, split DNS, split tunneling, a
-reconnecting supervisor and a menu bar app.
+Homebrew packages for [OpenConnect for Mac](https://github.com/ValeraGin/openconnect-for-mac): an independent macOS menu-bar client with SSO, split routes and split DNS.
 
-```bash
-brew tap ValeraGin/ocbar
-brew trust ValeraGin/ocbar     # third-party tap: Homebrew refuses untrusted formulae
-brew install ocbar
-sudo ocbar install             # once: privileged helper, sudoers rule, LaunchAgent
-ocbar app start
+```sh
+brew tap ValeraGin/openconnect-for-mac
+brew trust ValeraGin/openconnect-for-mac
+brew install openconnect-for-mac
+ocmac migrate
+sudo ocmac install
+ocmac app start
 ```
 
-Updates: `brew upgrade ocbar`, then `ocbar app stop && ocbar app start`.
-Uninstall: `sudo ocbar uninstall`, then `brew uninstall ocbar`.
+The migration preserves original profiles and credentials. System setup stops the previous VPN session and restores launch at login when it was enabled.
 
-The formula builds from source on your machine (macOS 13+, Command Line
-Tools). There is no Apple Developer ID; a locally built app is not
-quarantined, so Gatekeeper does not block it.
+Update with `brew upgrade openconnect-for-mac`, then `ocmac app stop && ocmac app start`.
+Uninstall with `sudo ocmac uninstall`, then `brew uninstall openconnect-for-mac`.
 
----
+[Website and installer](https://valeragin.github.io/openconnect-for-mac/) · [Инструкция по-русски](https://github.com/ValeraGin/openconnect-for-mac/blob/main/README.ru.md)
 
-Homebrew tap для ocbar — клиента OpenConnect для macOS. Установка — команды
-выше; подробности по-русски — [README.ru.md](https://github.com/ValeraGin/ocbar/blob/main/README.ru.md).
+The formula and migration rules are maintained in the main repository's `Formula/` directory and published here with each release.

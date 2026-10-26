@@ -1,13 +1,13 @@
-class Ocbar < Formula
+class OpenconnectForMac < Formula
   desc "OpenConnect for Mac: SSO, split DNS, split tunnel, menu bar"
-  homepage "https://valeragin.github.io/ocbar/"
+  homepage "https://valeragin.github.io/openconnect-for-mac/"
   # Стабильная версия — тег и коммит: версия берётся из имени тега, а хеш
   # архива не нужно считать заранее.
-  url "https://github.com/ValeraGin/ocbar.git",
-      tag:      "v0.24.0",
-      revision: "c3ec3b7e26c50ca3fbfe97a91f0591b61a61e83c"
+  url "https://github.com/ValeraGin/openconnect-for-mac.git",
+      tag:      "v0.25.0",
+      revision: "a70bf73dc03e65645ac0688edffaf1294a50b1c1"
   license "MIT"
-  head "https://github.com/ValeraGin/ocbar.git", branch: "main"
+  head "https://github.com/ValeraGin/openconnect-for-mac.git", branch: "main"
 
   depends_on macos: :sonoma
   depends_on "openconnect"
@@ -17,61 +17,63 @@ class Ocbar < Formula
     # --disable-sandbox: SwiftPM внутри песочницы brew не может создать свою.
     system "swift", "build", "-c", "release", "--disable-sandbox",
            "--package-path", "auth", "--scratch-path", buildpath/"auth/.build"
-    libexec.install "auth/.build/release/ocbar-auth"
+    libexec.install "auth/.build/release/ocmac-auth"
     # Приложение меню-бара: SwiftPM даёт исполняемый файл, бандл с
     # Info.plist (LSUIElement) собирает make-app.sh.
     cd("app") { system "./make-app.sh", prefix }
-    libexec.install "libexec/ocbar-helper"
+    libexec.install "libexec/ocmac-helper"
     # Помощники клиента: состояние в JSON, общий журнал, маскировка отчёта,
     # вход в парольную группу и сами проверки. Клиент ищет их в libexec.
-    libexec.install "libexec/ocbar-status-json.py"
-    libexec.install "libexec/ocbar-logs.py"
-    libexec.install "libexec/ocbar-redact.py"
-    libexec.install "libexec/ocbar-pwauth.py"
-    libexec.install "libexec/ocbar-csd.py"
+    libexec.install "libexec/ocmac-status-json.py"
+    libexec.install "libexec/ocmac-logs.py"
+    libexec.install "libexec/ocmac-redact.py"
+    libexec.install "libexec/ocmac-pwauth.py"
+    libexec.install "libexec/ocmac-csd.py"
+    libexec.install "libexec/ocmac-migrate.py"
     # Перевод сообщений клиента: каталог шаблонов и тот, кто его применяет.
-    libexec.install "libexec/ocbar-tr.pl"
-    libexec.install "libexec/ocbar-en.tsv"
-    libexec.install "libexec/ocbar-selftest.sh"
-    bin.install "bin/ocbar"
-    (pkgshare/"swiftbar").install "swiftbar/ocbar.5s.sh"
-    # example.ocbar — образец основного формата (профиль одним файлом); маска
+    libexec.install "libexec/ocmac-tr.pl"
+    libexec.install "libexec/ocmac-en.tsv"
+    libexec.install "libexec/ocmac-selftest.sh"
+    bin.install "bin/ocmac"
+    (pkgshare/"swiftbar").install "swiftbar/ocmac.5s.sh"
+    # example.ocmac — образец основного формата (профиль одним файлом); маска
     # *.example его не берёт, поэтому он назван отдельно.
-    (pkgshare/"examples").install Dir["etc/*.example"], "etc/example.ocbar", "etc/csd-wrapper.sh"
+    (pkgshare/"examples").install Dir["etc/*.example"], "etc/example.ocmac", "etc/csd-wrapper.sh"
     doc.install "README.md", "README.ru.md", "INSTALL.md", "TROUBLESHOOTING.md", "SECURITY.md", "CHANGELOG.md"
   end
 
   def caveats
     <<~EOS
       Один раз, с паролем — хелпер root:wheel, sudoers.d, LaunchAgent супервизора:
-        sudo ocbar install
+        ocmac migrate
+        sudo ocmac install
 
       Профиль — один файл на подключение (образцы в #{pkgshare}/examples):
-        mkdir -p ~/.config/ocbar/profiles
-        cp #{pkgshare}/examples/example.ocbar ~/.config/ocbar/profiles/main.ocbar
+        mkdir -p ~/.config/ocmac/profiles
+        cp #{pkgshare}/examples/example.ocmac ~/.config/ocmac/profiles/main.ocmac
       Старый формат (profiles.conf, networks.conf, zones.conf) тоже читается;
-      перевести в файл — ocbar export. Правила формы входа — секция [Autofill]
-      в самом профиле, пишет их ocbar learn.
+      перевести в файл — ocmac export. Правила формы входа — секция [Autofill]
+      в самом профиле, пишет их ocmac learn.
 
       Меню-бар — приложение (плагин SwiftBar остаётся как запасной вариант):
-        ocbar app start                 запустить; кладёт копию в ~/Applications,
+        ocmac app start                 запустить; кладёт копию в ~/Applications,
                                         чтобы OpenConnect for Mac был в лаунчере и Spotlight
-        ocbar app autostart on          запускать при входе в систему
-      После brew upgrade: ocbar app stop && ocbar app start — обновит и копию.
+        ocmac app autostart on          запускать при входе в систему
+      После brew upgrade: ocmac app stop && ocmac app start — обновит и копию.
 
       Прокси-режим (Mode = proxy в профиле) нуждается в ocproxy — он не
       зависимость формулы, потому что нужен только этому режиму:
         brew install ocproxy
 
       Плагин SwiftBar — символической ссылкой в каталог плагинов:
-        ln -s #{pkgshare}/swiftbar/ocbar.5s.sh ~/Library/Application\\ Support/SwiftBar/Plugins/
+        ln -s #{pkgshare}/swiftbar/ocmac.5s.sh ~/Library/Application\\ Support/SwiftBar/Plugins/
 
       После brew upgrade openconnect копия бинаря перестаёт совпадать с манифестом
-      доверия — ocbar doctor подскажет: sudo ocbar install --trust
+      доверия — ocmac doctor подскажет: sudo ocmac install --trust
 
       Удаление — строго в таком порядке:
-        sudo ocbar uninstall
-        brew uninstall ocbar
+        sudo ocmac uninstall
+        brew uninstall openconnect-for-mac
       Наоборот нельзя: без формулы убирать системную часть нечем, и останутся
       root-хелпер с беспарольным sudo, копия openconnect и агент супервизора,
       которого launchd перезапускает. Что удалить после — INSTALL.md, «Удаление».
@@ -81,24 +83,24 @@ class Ocbar < Formula
   test do
     # Стабильная сборка — ровно версия формулы; у HEAD версия формулы
     # «HEAD-…», поэтому там сверяется только префикс.
-    out = shell_output("#{bin}/ocbar version").strip
+    out = shell_output("#{bin}/ocmac version").strip
     if version.head?
-      assert_match(/\Aocbar 0\./, out)
+      assert_match(/\Aocmac 0\./, out)
     else
-      assert_equal "ocbar #{version}", out
+      assert_equal "ocmac #{version}", out
     end
-    assert_match "selftest: всё OK", shell_output("#{bin}/ocbar selftest")
-    assert_match "selftest: всё OK", shell_output("#{libexec}/ocbar-auth --selftest")
-    assert_match "ocbar-helper", shell_output("#{libexec}/ocbar-helper version")
-    assert_predicate prefix/"ocbar.app/Contents/MacOS/ocbar-app", :executable?
-    plist = prefix/"ocbar.app/Contents/Info.plist"
+    assert_match "selftest: всё OK", shell_output("#{bin}/ocmac selftest")
+    assert_match "selftest: всё OK", shell_output("#{libexec}/ocmac-auth --selftest")
+    assert_match "ocmac-helper", shell_output("#{libexec}/ocmac-helper version")
+    assert_predicate prefix/"ocmac.app/Contents/MacOS/ocmac-app", :executable?
+    plist = prefix/"ocmac.app/Contents/Info.plist"
     system "plutil", "-lint", plist
     assert_equal "OpenConnect for Mac",
                  shell_output("plutil -extract CFBundleDisplayName raw #{plist}").strip
     # Без строки о камере macOS завершает процесс при чтении QR камерой,
-    # без схемы ocbar:// не доходят уведомления от приложения.
+    # без схемы ocmac:// не доходят уведомления от приложения.
     refute_empty shell_output("plutil -extract NSCameraUsageDescription raw #{plist}").strip
-    assert_equal "ocbar",
+    assert_equal "ocmac",
                  shell_output("plutil -extract CFBundleURLTypes.0.CFBundleURLSchemes.0 raw #{plist}").strip
     unless version.head?
       assert_equal version.to_s,
