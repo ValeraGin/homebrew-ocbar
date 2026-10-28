@@ -4,8 +4,8 @@ class OpenconnectForMac < Formula
   # Стабильная версия — тег и коммит: версия берётся из имени тега, а хеш
   # архива не нужно считать заранее.
   url "https://github.com/ValeraGin/openconnect-for-mac.git",
-      tag:      "v0.25.1",
-      revision: "d459888acab51dd3d40a904696a9dfb9c5254b6d"
+      tag:      "v0.26.0",
+      revision: "f25aae595ca0cb0fa5aab9c11414bddde5401f4e"
   license "MIT"
   head "https://github.com/ValeraGin/openconnect-for-mac.git", branch: "main"
 
@@ -30,6 +30,8 @@ class OpenconnectForMac < Formula
     libexec.install "libexec/ocmac-pwauth.py"
     libexec.install "libexec/ocmac-csd.py"
     libexec.install "libexec/ocmac-migrate.py"
+    libexec.install "libexec/ocmac-app-update.py"
+    libexec.install "libexec/ocmac-prepare.py"
     # Перевод сообщений клиента: каталог шаблонов и тот, кто его применяет.
     libexec.install "libexec/ocmac-tr.pl"
     libexec.install "libexec/ocmac-en.tsv"
@@ -46,7 +48,7 @@ class OpenconnectForMac < Formula
     <<~EOS
       Один раз, с паролем — хелпер root:wheel, sudoers.d, LaunchAgent супервизора:
         ocmac migrate
-        sudo ocmac install
+        ocmac prepare && sudo ocmac install
 
       Профиль — один файл на подключение (образцы в #{pkgshare}/examples):
         mkdir -p ~/.config/ocmac/profiles
@@ -59,7 +61,8 @@ class OpenconnectForMac < Formula
         ocmac app start                 запустить; кладёт копию в ~/Applications,
                                         чтобы OpenConnect for Mac был в лаунчере и Spotlight
         ocmac app autostart on          запускать при входе в систему
-      После brew upgrade: ocmac app stop && ocmac app start — обновит и копию.
+      После brew upgrade обновите копию приложения: ocmac app upgrade.
+      Установщик и ocmac app start выполняют это автоматически.
 
       Прокси-режим (Mode = proxy в профиле) нуждается в ocproxy — он не
       зависимость формулы, потому что нужен только этому режиму:
